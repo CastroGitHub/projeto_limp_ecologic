@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function indexLimp() {
+export default function Index() {
   return (
     <View style={est.view}>
       <Text style={est.text}>Hello, World!</Text>
