@@ -94,7 +94,9 @@ const [clientes, setClientes] = useState(fakeDatabase.clientes);
 
       {/* Botões */}
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.newButton}>
+        <TouchableOpacity
+          style={styles.newButton}
+          onPress={() => router.push("/novoCliente")}>
           <Text style={styles.newButtonText}>+ Novo cliente</Text>
         </TouchableOpacity>
 
