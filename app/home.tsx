@@ -29,7 +29,9 @@ export default function HomeScreen() {
 
         <View style={styles.gridContainer}>
           <View style={styles.row}>
-            <TouchableOpacity style={[styles.menuButton, styles.activeButton]}>
+            <TouchableOpacity
+              style={[styles.menuButton, styles.activeButton]}
+              onPress={() => router.push("/agenda")}>
               <FontAwesome5 name="calendar-alt" size={40} color="#0099ff" />
               <Text style={[styles.buttonText, styles.activeText]}>Agenda</Text>
             </TouchableOpacity>
