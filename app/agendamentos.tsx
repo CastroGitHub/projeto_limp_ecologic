@@ -19,13 +19,18 @@ export default function Agendamentos() {
     fakeDatabase.agendamentos
   );
 
+  // 🔥 modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [idSelecionado, setIdSelecionado] = useState<string | null>(null);
+  const [nomeSelecionado, setNomeSelecionado] = useState("");
+
   useFocusEffect(
     useCallback(() => {
       setAgendamentos([...fakeDatabase.agendamentos]);
     }, [])
   );
 
-  // 🔥 CONCLUIR / DESFAZER
+  // ✔ concluir / desfazer
   function concluirAgendamento(id: string) {
     const index = fakeDatabase.agendamentos.findIndex(
       (item) => item.id === id
@@ -37,6 +42,22 @@ export default function Agendamentos() {
     }
 
     setAgendamentos([...fakeDatabase.agendamentos]);
+  }
+
+  // 🗑 confirmar exclusão
+  function confirmarExclusao() {
+    const novaLista = fakeDatabase.agendamentos.filter(
+      (item) => item.id !== idSelecionado
+    );
+
+    fakeDatabase.agendamentos = novaLista;
+    setAgendamentos([...novaLista]);
+
+    setModalVisible(false);
+  }
+
+  function cancelarExclusao() {
+    setModalVisible(false);
   }
 
   const listaFiltrada = agendamentos.filter(
@@ -77,11 +98,10 @@ export default function Agendamentos() {
         {item.descricao}
       </Text>
 
-      {/* BOTÕES */}
       <View style={styles.botoes}>
         {!item.concluido ? (
           <>
-            {/* ✔ concluir */}
+            {/* ✔ */}
             <TouchableOpacity
               style={styles.btnCheck}
               onPress={() => concluirAgendamento(item.id)}
@@ -89,7 +109,7 @@ export default function Agendamentos() {
               <MaterialIcons name="check" size={20} color="white" />
             </TouchableOpacity>
 
-            {/* ✏ editar */}
+            {/* ✏ */}
             <TouchableOpacity
               style={styles.btnEdit}
               onPress={() =>
@@ -104,7 +124,7 @@ export default function Agendamentos() {
           </>
         ) : (
           <>
-            {/* 🔄 desfazer */}
+            {/* 🔄 */}
             <TouchableOpacity
               style={styles.btnUndo}
               onPress={() => concluirAgendamento(item.id)}
@@ -114,8 +134,15 @@ export default function Agendamentos() {
           </>
         )}
 
-        {/* 🗑 excluir */}
-        <TouchableOpacity style={styles.btnDelete}>
+        {/* 🗑 */}
+        <TouchableOpacity
+          style={styles.btnDelete}
+          onPress={() => {
+            setIdSelecionado(item.id);
+            setNomeSelecionado(item.nome);
+            setModalVisible(true);
+          }}
+        >
           <FontAwesome name="trash" size={18} color="white" />
         </TouchableOpacity>
       </View>
@@ -138,19 +165,47 @@ export default function Agendamentos() {
         />
       )}
 
+      {/* BOTÃO VOLTAR */}
       <TouchableOpacity style={styles.btnVoltar} onPress={() => router.back()}>
         <Text style={{ color: "white" }}>Voltar</Text>
       </TouchableOpacity>
+
+      {/* 🔥 MODAL */}
+      {modalVisible && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTexto}>
+              Você deseja excluir o agendamento de{" "}
+              <Text style={{ color: "#2196F3", fontWeight: "bold" }}>
+                {nomeSelecionado}
+              </Text>
+              ?
+            </Text>
+
+            <View style={styles.modalBotoes}>
+              <TouchableOpacity
+                style={styles.btnNao}
+                onPress={cancelarExclusao}
+              >
+                <Text style={{ color: "white" }}>Não</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.btnSim}
+                onPress={confirmarExclusao}
+              >
+                <Text style={{ color: "white" }}>Sim</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#eee",
-    padding: 20,
-  },
+  container: { flex: 1, backgroundColor: "#eee", padding: 20 },
 
   titulo: {
     marginTop: 50,
@@ -159,11 +214,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  vazio: {
-    textAlign: "center",
-    marginTop: 20,
-    color: "#555",
-  },
+  vazio: { textAlign: "center", marginTop: 20, color: "#555" },
 
   card: {
     backgroundColor: "#fff",
@@ -174,28 +225,13 @@ const styles = StyleSheet.create({
     borderColor: "#2196F3",
   },
 
-  cardConcluido: {
-    backgroundColor: "#2f6ea5",
-  },
+  cardConcluido: { backgroundColor: "#2f6ea5" },
 
-  nome: {
-    fontWeight: "bold",
-    color: "#2196F3",
-  },
+  nome: { fontWeight: "bold", color: "#2196F3" },
+  hora: { marginTop: 5, fontWeight: "bold" },
+  descricao: { marginTop: 5, color: "#555" },
 
-  hora: {
-    marginTop: 5,
-    fontWeight: "bold",
-  },
-
-  descricao: {
-    marginTop: 5,
-    color: "#555",
-  },
-
-  textoConcluido: {
-    color: "#fff",
-  },
+  textoConcluido: { color: "#fff" },
 
   botoes: {
     flexDirection: "row",
@@ -204,35 +240,60 @@ const styles = StyleSheet.create({
     gap: 10,
   },
 
-  btnCheck: {
-    backgroundColor: "#4CAF50",
-    padding: 6,
-    borderRadius: 5,
-  },
-
-  btnEdit: {
-    backgroundColor: "#2196F3",
-    padding: 6,
-    borderRadius: 5,
-  },
-
-  btnUndo: {
-    backgroundColor: "#f39c12",
-    padding: 6,
-    borderRadius: 5,
-  },
-
-  btnDelete: {
-    backgroundColor: "#888",
-    padding: 6,
-    borderRadius: 5,
-  },
+  btnCheck: { backgroundColor: "#4CAF50", padding: 6, borderRadius: 5 },
+  btnEdit: { backgroundColor: "#2196F3", padding: 6, borderRadius: 5 },
+  btnUndo: { backgroundColor: "#f39c12", padding: 6, borderRadius: 5 },
+  btnDelete: { backgroundColor: "#888", padding: 6, borderRadius: 5 },
 
   btnVoltar: {
     marginTop: 20,
     backgroundColor: "#5c7ea5",
     padding: 13,
     borderRadius: 20,
+    alignItems: "center",
+  },
+
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  modalBox: {
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+  },
+
+  modalTexto: {
+    textAlign: "center",
+    marginBottom: 20,
+  },
+
+  modalBotoes: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+
+  btnNao: {
+    backgroundColor: "#5c7ea5",
+    padding: 10,
+    borderRadius: 20,
+    width: "40%",
+    alignItems: "center",
+  },
+
+  btnSim: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 20,
+    width: "40%",
     alignItems: "center",
   },
 });
