@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 
 const YEAR = 2026;
 
@@ -101,14 +102,20 @@ export default function Agenda() {
           return (
             <View style={styles.diaContainer}>
               {item && (
-                <View
-                  style={[
-                    styles.bolinha,
-                    isHoje && { backgroundColor: "#4CAF50" },
-                  ]}
-                >
-                  <Text style={{ color: "white" }}>{item}</Text>
-                </View>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/agendamentos",
+                    params: { dia: item, mes: mesSelecionado },
+                  })
+                }
+                style={[
+                  styles.bolinha,
+                  isHoje && { backgroundColor: "#4CAF50" },
+                ]}
+              >
+                <Text style={{ color: "white" }}>{item}</Text>
+              </TouchableOpacity>
               )}
             </View>
           );

@@ -1,4 +1,3 @@
-// database.js
 export const fakeDatabase = {
   users: [
     { nome: "Admin", email: "admin@teste.com", usuario: "admin", senha: "123" }
@@ -6,7 +5,6 @@ export const fakeDatabase = {
 
   currentUser: null,
 
-  // ✅ NOVO: lista de clientes
   clientes: [
     {
       id: "1",
@@ -19,16 +17,36 @@ export const fakeDatabase = {
       ano: "2026",
       obs: "Cachorro bravo",
     },
+  ],
+
+  // 🔥 NOVO AQUI
+  agendamentos: [
+    {
+      id: "1",
+      dia: 1,
+      nome: "Dona Silvia",
+      hora: "09:00",
+      descricao: "1 sofá e 1 poltrona",
+    },
     {
       id: "2",
-      nome: "João",
-      telefone: "11999999999",
-      cidade: "São Paulo",
-      bairro: "Centro",
-      endereco: "Rua qualquer",
-      status: "Agendado",
-      ano: "2025",
-      obs: "",
+      dia: 1,
+      nome: "Seu Cleber",
+      hora: "11:30",
+      descricao: "1 sofá e 2 almofadas",
     },
   ],
 };
+
+export function editarAgendamento(id, novosDados) {
+  const index = fakeDatabase.agendamentos.findIndex(
+    (item) => item.id === id
+  );
+
+  if (index !== -1) {
+    fakeDatabase.agendamentos[index] = {
+      ...fakeDatabase.agendamentos[index],
+      ...novosDados,
+    };
+  }
+}
