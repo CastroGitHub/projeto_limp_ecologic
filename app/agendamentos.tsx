@@ -170,6 +170,17 @@ export default function Agendamentos() {
         <Text style={{ color: "white" }}>Voltar</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={styles.btnAdd}
+        onPress={() =>
+            router.push({
+            pathname: "/criarAgendamento",
+            params: { dia: diaNumero },
+            })}>
+
+  <MaterialIcons name="add" size={28} color="white" />
+</TouchableOpacity>
+
       {/* 🔥 MODAL */}
       {modalVisible && (
         <View style={styles.modalOverlay}>
@@ -296,4 +307,21 @@ const styles = StyleSheet.create({
     width: "40%",
     alignItems: "center",
   },
+  btnAdd: {
+  position: "absolute",
+  bottom: 90,
+  right: 20,
+  backgroundColor: "#4CAF50",
+  width: 60,
+  height: 60,
+  borderRadius: 30,
+  justifyContent: "center",
+  alignItems: "center",
+
+  // sombra (ANDROID + IOS)
+  elevation: 5,
+  shadowColor: "#000",
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+},
 });
