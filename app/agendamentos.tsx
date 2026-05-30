@@ -13,53 +13,108 @@ import { fakeDatabase } from "../database";
 
 export default function Agendamentos() {
   const { dia } = useLocalSearchParams();
-
   const diaNumero = Number(dia);
 
-  // 🔥 STATE IGUAL AO CLIENTE
   const [agendamentos, setAgendamentos] = useState(
     fakeDatabase.agendamentos
   );
 
-  // 🔥 ATUALIZA QUANDO VOLTA PRA TELA
   useFocusEffect(
     useCallback(() => {
       setAgendamentos([...fakeDatabase.agendamentos]);
     }, [])
   );
 
-  // 🔥 FILTRA PELO DIA
+  // 🔥 CONCLUIR / DESFAZER
+  function concluirAgendamento(id: string) {
+    const index = fakeDatabase.agendamentos.findIndex(
+      (item) => item.id === id
+    );
+
+    if (index !== -1) {
+      fakeDatabase.agendamentos[index].concluido =
+        !fakeDatabase.agendamentos[index].concluido;
+    }
+
+    setAgendamentos([...fakeDatabase.agendamentos]);
+  }
+
   const listaFiltrada = agendamentos.filter(
     (item) => item.dia === diaNumero
   );
 
   const renderItem = ({ item }: any) => (
-    <View style={styles.card}>
-      <Text style={styles.nome}>{item.nome}</Text>
-      <Text style={styles.hora}>{item.hora}</Text>
-      <Text style={styles.descricao}>{item.descricao}</Text>
+    <View
+      style={[
+        styles.card,
+        item.concluido && styles.cardConcluido,
+      ]}
+    >
+      <Text
+        style={[
+          styles.nome,
+          item.concluido && styles.textoConcluido,
+        ]}
+      >
+        {item.nome}
+      </Text>
+
+      <Text
+        style={[
+          styles.hora,
+          item.concluido && styles.textoConcluido,
+        ]}
+      >
+        {item.hora}
+      </Text>
+
+      <Text
+        style={[
+          styles.descricao,
+          item.concluido && styles.textoConcluido,
+        ]}
+      >
+        {item.descricao}
+      </Text>
 
       {/* BOTÕES */}
       <View style={styles.botoes}>
-        {/* ✔ */}
-        <TouchableOpacity style={styles.btnCheck}>
-          <MaterialIcons name="check" size={20} color="white" />
-        </TouchableOpacity>
+        {!item.concluido ? (
+          <>
+            {/* ✔ concluir */}
+            <TouchableOpacity
+              style={styles.btnCheck}
+              onPress={() => concluirAgendamento(item.id)}
+            >
+              <MaterialIcons name="check" size={20} color="white" />
+            </TouchableOpacity>
 
-        {/* ✏ EDITAR */}
-        <TouchableOpacity
-          style={styles.btnEdit}
-          onPress={() =>
-            router.push({
-              pathname: "/editarAgendamento",
-              params: { id: item.id },
-            })
-          }
-        >
-          <MaterialIcons name="edit" size={20} color="white" />
-        </TouchableOpacity>
+            {/* ✏ editar */}
+            <TouchableOpacity
+              style={styles.btnEdit}
+              onPress={() =>
+                router.push({
+                  pathname: "/editarAgendamento",
+                  params: { id: item.id },
+                })
+              }
+            >
+              <MaterialIcons name="edit" size={20} color="white" />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            {/* 🔄 desfazer */}
+            <TouchableOpacity
+              style={styles.btnUndo}
+              onPress={() => concluirAgendamento(item.id)}
+            >
+              <MaterialIcons name="undo" size={20} color="white" />
+            </TouchableOpacity>
+          </>
+        )}
 
-        {/* 🗑 */}
+        {/* 🗑 excluir */}
         <TouchableOpacity style={styles.btnDelete}>
           <FontAwesome name="trash" size={18} color="white" />
         </TouchableOpacity>
@@ -83,7 +138,6 @@ export default function Agendamentos() {
         />
       )}
 
-      {/* VOLTAR */}
       <TouchableOpacity style={styles.btnVoltar} onPress={() => router.back()}>
         <Text style={{ color: "white" }}>Voltar</Text>
       </TouchableOpacity>
@@ -120,6 +174,10 @@ const styles = StyleSheet.create({
     borderColor: "#2196F3",
   },
 
+  cardConcluido: {
+    backgroundColor: "#2f6ea5",
+  },
+
   nome: {
     fontWeight: "bold",
     color: "#2196F3",
@@ -133,6 +191,10 @@ const styles = StyleSheet.create({
   descricao: {
     marginTop: 5,
     color: "#555",
+  },
+
+  textoConcluido: {
+    color: "#fff",
   },
 
   botoes: {
@@ -150,6 +212,12 @@ const styles = StyleSheet.create({
 
   btnEdit: {
     backgroundColor: "#2196F3",
+    padding: 6,
+    borderRadius: 5,
+  },
+
+  btnUndo: {
+    backgroundColor: "#f39c12",
     padding: 6,
     borderRadius: 5,
   },

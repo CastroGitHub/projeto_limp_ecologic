@@ -27,6 +27,7 @@ export const fakeDatabase = {
       nome: "Dona Silvia",
       hora: "09:00",
       descricao: "1 sofá e 1 poltrona",
+      concluido: false, // 🔥 novo
     },
     {
       id: "2",
